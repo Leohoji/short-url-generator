@@ -26,13 +26,19 @@ const app = express() // Use express
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' })) // Set hbs engine: defaultLayout and extname
 app.set('view engine', 'hbs') //use view engine
 
-app.use(express.static('public')) // Use static files including JS and CSS
+// app.use(express.static('public')) // Use static files including JS and CSS
 
 // Set home route
 app.get('/', (req, res) => {
   res.render('index')
 })
 
+// Set url shorten page route
+app.post('/copy', (req, res) => {
+  res.render('copy')
+})
+
+// Check whether server works
 app.listen(port, () => {
   console.log(`Web is running on http://localhost:${port}`)
 })
