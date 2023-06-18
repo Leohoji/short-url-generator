@@ -56,7 +56,7 @@ app.post('/copy', (req, res) => {
     .catch((error) => console.log(error))
 })
 
-// Set shortUrl route
+// Set shortUrl route 
 app.get(`/:uniText`, (req, res) => {
   const uniText = req.params.uniText
   return URL.findOne({ uniText: uniText })
