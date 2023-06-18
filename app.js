@@ -38,17 +38,33 @@ app.get('/', (req, res) => {
 
 // Set url shorten page route
 app.post('/copy', (req, res) => {
-  const urls = urlShortener(req.body.url) // -> [url, newUrl, gibberish]
-  console.log(urls)
-  return URL.create({ originalUrl: urls[0], shortUrl: urls[1], gibberish: urls[2] }) // Save to mongodb database
-    .then(() => res.render('copy', { url: urls[1] }))
+
+  const urlInput = req.body.url // get user's input
+
+  // Error control: urlInput is none
+  if (!urlInput) {
+    return res.render('error')
+  }
+
+  return URL.find({}) // find all data
+    .lean()
+    .then((urls) => {
+      const data = urls.find(url => url.originalUrl === urlInput || url.shortUrl === urlInput)
+      if (data) { // if urlInput already exists in mongodb, just render it
+        return res.render('copy', { url: data.shortUrl })
+      } else { // if not, create new url to mongodb
+        const urls = urlShortener(urlInput) // [url, newUrl, gibberish]
+        URL.create({ originalUrl: urls[0], shortUrl: urls[1], gibberish: urls[2] })
+        return res.render('copy', { url: urls[1] })
+      }
+    })
     .catch((error) => console.log(error))
 })
--
-// Check whether server works
-app.listen(port, () => {
-  console.log(`Web is running on http://localhost:${port}`)
-})
+  -
+  // Check whether server works
+  app.listen(port, () => {
+    console.log(`Web is running on http://localhost:${port}`)
+  })
 
 
 // Gibberish generator
