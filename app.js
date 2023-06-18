@@ -41,37 +41,45 @@ app.post('/copy', (req, res) => {
 
   const urlInput = req.body.url // get user's input
 
-  // Error control: urlInput is none
-  if (!urlInput) {
-    return res.render('error')
-  }
-
   return URL.find({}) // find all data
     .lean()
     .then((urls) => {
       const data = urls.find(url => url.originalUrl === urlInput || url.shortUrl === urlInput)
       if (data) { // if urlInput already exists in mongodb, just render it
-        return res.render('copy', { url: data.shortUrl })
+        return res.render('copy', { originalUrl: data.originalUrl, url: data.shortUrl })
       } else { // if not, create new url to mongodb
-        const urls = urlShortener(urlInput) // [url, newUrl, gibberish]
-        URL.create({ originalUrl: urls[0], shortUrl: urls[1], gibberish: urls[2] })
-        return res.render('copy', { url: urls[1] })
+        const urls = urlShortener(urlInput) // [originalUrl, shortUrl, uniText]
+        URL.create({ originalUrl: urls[0], shortUrl: urls[1], uniText: urls[2] })
+        return res.render('copy', { originalUrl: urls[0], url: urls[1] })
       }
     })
     .catch((error) => console.log(error))
 })
-  -
-  // Check whether server works
-  app.listen(port, () => {
-    console.log(`Web is running on http://localhost:${port}`)
-  })
+
+// Set shortUrl route
+app.get(`/:uniText`, (req, res) => {
+  const uniText = req.params.uniText
+  return URL.findOne({ uniText: uniText })
+    .lean()
+    .then(url => {
+      if (!url) {
+        return res.render('error', { error: 'This page is not available! Please try again!' })
+      } else {
+        return res.redirect(url.originalUrl)
+      }
+    })
+})
+
+// Check whether server works
+app.listen(port, () => {
+  console.log(`Web is running on http://localhost:${port}`)
+})
 
 
-// Gibberish generator
-function gibberishGenerator(database) {
+// UniText generator
+function uniTextGenerator(database) {
   /*
-  This function will generate a gibberish.
-  Parameter:
+  This function will generate a uniText.
   database: Array
   Return: 
   Random value of index in database
@@ -81,10 +89,9 @@ function gibberishGenerator(database) {
 }
 
 // Shuffle algorithm
-function gibberishShuffler(sampleCodes) {
+function uniTextShuffler(sampleCodes) {
   /*
-  This function will generate a gibberish shuffled.
-  Parameter:
+  This function will generate a uniText shuffled.
   sampleCodes: Array containing elements what you would like to shuffle
   Return: 
   SampleCodes shuffled
@@ -97,42 +104,33 @@ function gibberishShuffler(sampleCodes) {
 }
 
 // Set url shortener
-function urlShortener(url) {
+function urlShortener(originalUrl) {
   /* 
   This is an url shortener function, inputting the url what you would like to shorten.
-  Parameter:
   url: String
   Return: 
-  An array: [url, newUrl, gibberish]
+  An array: [originalUrl, shortUrl, uniText]
   */
   const lowerCaseLetters = 'abcdefghijklmnopqrstuvwxyz'
   const upperCaseLetters = lowerCaseLetters.toUpperCase()
   const numbers = '1234567890'
-  const gibberishDatabase = [lowerCaseLetters, upperCaseLetters, numbers]
+  const uniTextDatabase = [lowerCaseLetters, upperCaseLetters, numbers]
   const sampleCodes = []
-  let newUrl = ''
 
   // Generate three codes containing lowercase, uppercase and number
-  for (let randomSample of gibberishDatabase) {
-    sampleCodes.push(gibberishGenerator(randomSample))
+  for (let randomSample of uniTextDatabase) {
+    sampleCodes.push(uniTextGenerator(randomSample))
   }
 
-  // Generate two random codes from gibberishDatabase
+  // Generate two random codes from uniTextDatabase
   for (let i = 0; i < 2; i++) {
-    const randomCode = gibberishGenerator(gibberishDatabase)
-    sampleCodes.push(gibberishGenerator(randomCode))
+    const randomCode = uniTextGenerator(uniTextDatabase)
+    sampleCodes.push(uniTextGenerator(randomCode))
   }
 
-  // Further randomize sampleCodes to generate a real gibberish
-  const gibberish = gibberishShuffler(sampleCodes).join('') // Generate gibberish
+  // Further randomize sampleCodes to generate a real uniText
+  const uniText = uniTextShuffler(sampleCodes).join('') // Generate uniText
+  const shortUrl = 'http://localhost:3000/' + uniText
 
-  let urlElements = url.split('/') // Split url
-  // Check whether 'https' string is present 
-  if (urlElements.includes('https:')) {
-    newUrl += urlElements[0] + '//url-shortener-fly-io/' + gibberish
-  } else {
-    newUrl += 'https://url-shortener-fly-io/' + gibberish
-  }
-
-  return [url, newUrl, gibberish]
+  return [originalUrl, shortUrl, uniText]
 }

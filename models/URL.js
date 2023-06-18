@@ -10,7 +10,7 @@ const urlSchema = new Schema({
     type: String,
     require: true,
   },
-  gibberish: {
+  uniText: {
     type: String,
     require: true
   }
