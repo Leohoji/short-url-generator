@@ -2,6 +2,7 @@ const express = require('express') // Include express
 const exphbs = require('express-handlebars') // Include express-handlebars modules
 const mongoose = require('mongoose') // Include mongoose to connect database
 const bodyParser = require('body-parser') // Include body-parser module to decode info from "POST" method
+const URL = require('./models/URL')
 
 // Use dotenv in non-production machine
 if (process.env.NODE_ENV !== 'production') {
@@ -37,11 +38,13 @@ app.get('/', (req, res) => {
 
 // Set url shorten page route
 app.post('/copy', (req, res) => {
-  const url = urlShortener(req.body.url)
-  console.log(url)
-  return res.render('copy')
+  const urls = urlShortener(req.body.url) // -> [url, newUrl, gibberish]
+  console.log(urls)
+  return URL.create({ originalUrl: urls[0], shortUrl: urls[1], gibberish: urls[2] }) // Save to mongodb database
+    .then(() => res.render('copy', { url: urls[1] }))
+    .catch((error) => console.log(error))
 })
-
+-
 // Check whether server works
 app.listen(port, () => {
   console.log(`Web is running on http://localhost:${port}`)

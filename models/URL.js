@@ -9,7 +9,14 @@ const urlSchema = new Schema({
   shortUrl: {
     type: String,
     require: true,
+  },
+  gibberish: {
+    type: String,
+    require: true
   }
 })
 
-module.exports = mongoose.module('URL', urlSchema)
+/*
+mongoose.model will copy the Schema object we defined and compile it to an available model object, we name the model as URL before exportation for other files to use URL directly and operate any data related url shortener!
+*/
+module.exports = mongoose.model('URL', urlSchema)
