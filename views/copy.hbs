@@ -10,6 +10,20 @@
   <h3>Success! Please use this link:</h3>
   <a href="{{ originalUrl }}" target="_blank" id="shortUrl" class="text-primary fw-semibold"> {{ url }} </a>
   <div class="d-flex justify-content-center mt-3">
-    <button class="border border-primary text-white p-1" style="width: 100px; background-color: #6596e6" type="button">Copy</button>
+    <button class="border border-primary text-white p-1" id="copyUrl" style="width: 100px; background-color: #6596e6"
+      type="button">Copy</button>
   </div>
 </div>
+
+<script>
+  const url = document.querySelector('#shortUrl')
+  // Set 'copy' function
+  function copy() {
+    navigator.clipboard.writeText(url.innerText);
+    Swal.fire({
+      title: 'Copied!',
+      icon: 'success'
+    })
+  }
+  document.querySelector('#copyUrl').addEventListener('click', copy)
+</script>

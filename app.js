@@ -2,7 +2,8 @@ const express = require('express') // Include express
 const exphbs = require('express-handlebars') // Include express-handlebars modules
 const mongoose = require('mongoose') // Include mongoose to connect database
 const bodyParser = require('body-parser') // Include body-parser module to decode info from "POST" method
-const URL = require('./models/URL')
+const URL = require('./models/URL') // Include URL Schema
+const Swal = require('sweetalert2')
 
 // Use dotenv in non-production machine
 if (process.env.NODE_ENV !== 'production') {

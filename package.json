@@ -14,7 +14,8 @@
   "dependencies": {
     "express": "^4.18.2",
     "express-handlebars": "^3.1.0",
-    "mongoose": "^5.13.17"
+    "mongoose": "^5.13.17",
+    "sweetalert2": "^11.7.12"
   },
   "devDependencies": {
     "dotenv": "^16.1.4"
