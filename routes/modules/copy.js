@@ -22,6 +22,7 @@ router.post('/', (req, res) => {
       const checkUnique = urls.find(url => url.uniText === urlOutput[2]) // check whether uniText is unique
       while (checkUnique) {
         urlOutput = urlShortener(urlInput)
+        checkUnique = urls.find(url => url.uniText === urlOutput[2])
       }
       URL.create({ originalUrl: urlOutput[0], shortUrl: urlOutput[1], uniText: urlOutput[2] })
       return res.render('copy', { originalUrl: urlOutput[0], url: urlOutput[1] })
