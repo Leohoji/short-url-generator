@@ -30,13 +30,19 @@ cd short-url-generator
 npm install
 ```
 
-4. Start the server
+4. Create a file named ```.env``` and copy this code in it
+
+```
+MONGODB_URI=mongodb+srv://Alpha:camp@leocluster.r7bdedy.mongodb.net/URL-shortener?retryWrites=true&w=majority
+```
+
+6. Start the server
 
 ```
 npm run dev
 ```
 
-5. Copy the address on your website
+6. Copy the address on your website
 
 ```
 Web is running on http://localhost:3000
